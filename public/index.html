@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texas Hold'em Poker - Lobby</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Lobby Screen -->
+        <div id="lobby" class="screen active">
+            <div class="lobby-container">
+                <h1 class="game-title">Texas Hold'em Poker</h1>
+                
+                <div class="lobby-form">
+                    <h2>Join Game</h2>
+                    
+                    <div class="form-group">
+                        <label for="playerName">Enter Your Name:</label>
+                        <input type="text" id="playerName" placeholder="Your name" maxlength="20" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Choose Your Avatar:</label>
+                        <div class="avatar-selection">
+                            <div class="avatar-option selected" data-avatar="👤">👤</div>
+                            <div class="avatar-option" data-avatar="🦊">🦊</div>
+                            <div class="avatar-option" data-avatar="🐻">🐻</div>
+                            <div class="avatar-option" data-avatar="🐼">🐼</div>
+                            <div class="avatar-option" data-avatar="🦁">🦁</div>
+                            <div class="avatar-option" data-avatar="🐯">🐯</div>
+                            <div class="avatar-option" data-avatar="🐸">🐸</div>
+                            <div class="avatar-option" data-avatar="🐨">🐨</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Table:</label>
+                        <div class="table-selection">
+                            <div class="table-card" data-table="community">
+                                <h3>Community Table</h3>
+                                <div class="table-info">
+                                    <span class="player-count">0/10 Players</span>
+                                    <span class="table-status">Open</span>
+                                </div>
+                            </div>
+                            <div class="table-card" data-table="private">
+                                <h3>Private Table</h3>
+                                <div class="table-info">
+                                    <span class="player-count">0/10 Players</span>
+                                    <span class="table-status">Open</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="joinTableBtn" class="btn btn-primary" disabled>Join Table</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game" class="screen">
+            <div class="game-header">
+                <div class="table-name"></div>
+                <button id="leaveTableBtn" class="btn btn-secondary">Leave Table</button>
+            </div>
+
+            <div class="poker-table">
+                <div class="table-felt">
+                    <!-- Community Cards -->
+                    <div class="community-cards">
+                        <div class="card-slot"></div>
+                        <div class="card-slot"></div>
+                        <div class="card-slot"></div>
+                        <div class="card-slot"></div>
+                        <div class="card-slot"></div>
+                    </div>
+
+                    <!-- Pot Display -->
+                    <div class="pot-display">
+                        <div class="pot-label">Pot</div>
+                        <div class="pot-amount">$0</div>
+                    </div>
+
+                    <!-- Player Seats (10 positions) -->
+                    <div class="player-seats">
+                        <div class="player-seat seat-0" data-seat="0"></div>
+                        <div class="player-seat seat-1" data-seat="1"></div>
+                        <div class="player-seat seat-2" data-seat="2"></div>
+                        <div class="player-seat seat-3" data-seat="3"></div>
+                        <div class="player-seat seat-4" data-seat="4"></div>
+                        <div class="player-seat seat-5" data-seat="5"></div>
+                        <div class="player-seat seat-6" data-seat="6"></div>
+                        <div class="player-seat seat-7" data-seat="7"></div>
+                        <div class="player-seat seat-8" data-seat="8"></div>
+                        <div class="player-seat seat-9" data-seat="9"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="action-controls">
+                <div class="player-hand">
+                    <div class="card-slot"></div>
+                    <div class="card-slot"></div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="foldBtn" class="btn btn-danger">Fold</button>
+                    <button id="checkCallBtn" class="btn btn-success">Check</button>
+                    <button id="raiseBtn" class="btn btn-warning">Raise</button>
+                    
+                    <div class="raise-controls">
+                        <input type="range" id="raiseSlider" min="0" max="1000" step="10" value="0">
+                        <input type="number" id="raiseAmount" min="0" max="1000" step="10" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Winner Display -->
+            <div id="winnerDisplay" class="winner-display" style="display: none;">
+                <div class="winner-content">
+                    <h2>Hand Complete!</h2>
+                    <div class="winners-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

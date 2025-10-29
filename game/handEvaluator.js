@@ -6,6 +6,12 @@ const RANK_VALUES = {
   '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
 };
 
+// Reverse lookup for rank names
+const VALUE_TO_RANK = {
+  2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9',
+  10: '10', 11: 'J', 12: 'Q', 13: 'K', 14: 'A'
+};
+
 // Hand rankings
 const HAND_RANKS = {
   HIGH_CARD: 1,
@@ -141,7 +147,7 @@ class HandEvaluator {
       return {
         rank: HAND_RANKS.STRAIGHT_FLUSH,
         value: uniqueRanks,
-        description: `Straight Flush, ${RANKS[uniqueRanks[0] - 2]} high`
+        description: `Straight Flush, ${VALUE_TO_RANK[uniqueRanks[0]]} high`
       };
     }
 
@@ -149,7 +155,7 @@ class HandEvaluator {
       return {
         rank: HAND_RANKS.FOUR_OF_A_KIND,
         value: uniqueRanks,
-        description: `Four of a Kind, ${RANKS[uniqueRanks[0] - 2]}s`
+        description: `Four of a Kind, ${VALUE_TO_RANK[uniqueRanks[0]]}s`
       };
     }
 
@@ -157,7 +163,7 @@ class HandEvaluator {
       return {
         rank: HAND_RANKS.FULL_HOUSE,
         value: uniqueRanks,
-        description: `Full House, ${RANKS[uniqueRanks[0] - 2]}s over ${RANKS[uniqueRanks[1] - 2]}s`
+        description: `Full House, ${VALUE_TO_RANK[uniqueRanks[0]]}s over ${VALUE_TO_RANK[uniqueRanks[1]]}s`
       };
     }
 
@@ -165,7 +171,7 @@ class HandEvaluator {
       return {
         rank: HAND_RANKS.FLUSH,
         value: uniqueRanks,
-        description: `Flush, ${RANKS[uniqueRanks[0] - 2]} high`
+        description: `Flush, ${VALUE_TO_RANK[uniqueRanks[0]]} high`
       };
     }
 
@@ -173,7 +179,7 @@ class HandEvaluator {
       return {
         rank: HAND_RANKS.STRAIGHT,
         value: uniqueRanks,
-        description: `Straight, ${RANKS[uniqueRanks[0] - 2]} high`
+        description: `Straight, ${VALUE_TO_RANK[uniqueRanks[0]]} high`
       };
     }
 
@@ -181,7 +187,7 @@ class HandEvaluator {
       return {
         rank: HAND_RANKS.THREE_OF_A_KIND,
         value: uniqueRanks,
-        description: `Three of a Kind, ${RANKS[uniqueRanks[0] - 2]}s`
+        description: `Three of a Kind, ${VALUE_TO_RANK[uniqueRanks[0]]}s`
       };
     }
 
@@ -189,7 +195,7 @@ class HandEvaluator {
       return {
         rank: HAND_RANKS.TWO_PAIR,
         value: uniqueRanks,
-        description: `Two Pair, ${RANKS[uniqueRanks[0] - 2]}s and ${RANKS[uniqueRanks[1] - 2]}s`
+        description: `Two Pair, ${VALUE_TO_RANK[uniqueRanks[0]]}s and ${VALUE_TO_RANK[uniqueRanks[1]]}s`
       };
     }
 
@@ -197,14 +203,14 @@ class HandEvaluator {
       return {
         rank: HAND_RANKS.PAIR,
         value: uniqueRanks,
-        description: `Pair of ${RANKS[uniqueRanks[0] - 2]}s`
+        description: `Pair of ${VALUE_TO_RANK[uniqueRanks[0]]}s`
       };
     }
 
     return {
       rank: HAND_RANKS.HIGH_CARD,
       value: uniqueRanks,
-      description: `High Card, ${RANKS[uniqueRanks[0] - 2]}`
+      description: `High Card, ${VALUE_TO_RANK[uniqueRanks[0]]}`
     };
   }
 

@@ -135,12 +135,14 @@ io.on('connection', (socket) => {
     
     if (socket.tableId) {
       const table = tables[socket.tableId];
-      table.removePlayer(socket.id);
-      
-      io.to(socket.tableId).emit('playerLeft', {
-        playerId: socket.id,
-        gameState: table.getGameState()
-      });
+      if (table) {
+        table.removePlayer(socket.id);
+        
+        io.to(socket.tableId).emit('playerLeft', {
+          playerId: socket.id,
+          gameState: table.getGameState()
+        });
+      }
     }
   });
 });

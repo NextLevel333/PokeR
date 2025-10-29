@@ -69,11 +69,13 @@ class PokerGame {
       this.players.splice(index, 1);
       
       // Adjust indices if needed
-      if (this.gameInProgress && index <= this.currentPlayerIndex) {
-        this.currentPlayerIndex = Math.max(0, this.currentPlayerIndex - 1);
-      }
-      if (index <= this.dealerIndex) {
-        this.dealerIndex = Math.max(0, this.dealerIndex - 1);
+      if (this.players.length > 0) {
+        if (this.gameInProgress && index <= this.currentPlayerIndex) {
+          this.currentPlayerIndex = this.currentPlayerIndex % this.players.length;
+        }
+        if (index <= this.dealerIndex) {
+          this.dealerIndex = this.dealerIndex % this.players.length;
+        }
       }
     }
   }
@@ -109,7 +111,8 @@ class PokerGame {
     this.dealHoleCards();
 
     // Set current player (after big blind)
-    this.currentPlayerIndex = (this.dealerIndex + 3) % this.players.length;
+    // In heads-up (2 players), dealer acts first pre-flop
+    this.currentPlayerIndex = (this.dealerIndex + (this.players.length === 2 ? 1 : 3)) % this.players.length;
   }
 
   postBlinds() {
@@ -214,13 +217,20 @@ class PokerGame {
 
   moveToNextPlayer() {
     let count = 0;
+    const startIndex = this.currentPlayerIndex;
+    
     do {
       this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length;
       count++;
+      
+      // Break if we've looped through all players
+      if (count > this.players.length) {
+        break;
+      }
     } while (
       (this.players[this.currentPlayerIndex].folded || 
        this.players[this.currentPlayerIndex].allIn) &&
-      count < this.players.length
+      count <= this.players.length
     );
   }
 

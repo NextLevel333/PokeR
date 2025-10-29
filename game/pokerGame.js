@@ -44,6 +44,7 @@ class PokerGame {
     this.deck = new Deck();
     this.communityCards = [];
     this.pot = 0;
+    this.pots = []; // Array of {amount, eligiblePlayers[]} for side pots
     this.currentBet = 0;
     this.bettingRound = null;
     this.dealerIndex = 0;
@@ -94,6 +95,7 @@ class PokerGame {
     this.deck.reset();
     this.communityCards = [];
     this.pot = 0;
+    this.pots = [];
     this.currentBet = 0;
     this.bettingRound = BETTING_ROUNDS.PRE_FLOP;
     this.gameInProgress = true;
@@ -293,7 +295,119 @@ class PokerGame {
     this.communityCards.push(this.deck.deal());
   }
 
+  createSidePots() {
+    // Collect all players who have contributed to the pot
+    const playerBets = this.players
+      .filter(p => p.bet > 0)
+      .map(p => ({ player: p, bet: p.bet }))
+      .sort((a, b) => a.bet - b.bet);
+
+    if (playerBets.length === 0) return;
+
+    const pots = [];
+    let remainingPlayers = [...this.players.filter(p => p.bet > 0)];
+    let previousBetLevel = 0;
+
+    // Process each unique bet level
+    const uniqueBetLevels = [...new Set(playerBets.map(pb => pb.bet))].sort((a, b) => a - b);
+
+    for (let betLevel of uniqueBetLevels) {
+      const contributionPerPlayer = betLevel - previousBetLevel;
+      const potAmount = contributionPerPlayer * remainingPlayers.length;
+
+      if (potAmount > 0) {
+        pots.push({
+          amount: potAmount,
+          eligiblePlayers: remainingPlayers.map(p => p.id)
+        });
+      }
+
+      // Remove players who are all-in at this level from future pots
+      remainingPlayers = remainingPlayers.filter(p => p.bet > betLevel);
+      previousBetLevel = betLevel;
+    }
+
+    this.pots = pots;
+  }
+
   determineWinners() {
+    // Create side pots before determining winners
+    this.createSidePots();
+
+    const activePlayers = this.players.filter(p => !p.folded);
+    
+    // If only one player left (everyone else folded)
+    if (activePlayers.length === 1) {
+      const winner = activePlayers[0];
+      const totalPot = this.pots.reduce((sum, pot) => sum + pot.amount, 0) || this.pot;
+      winner.chips += totalPot;
+      return [{ player: winner, hand: null, winAmount: totalPot }];
+    }
+
+    // If no side pots were created (shouldn't happen, but fallback to simple pot)
+    if (this.pots.length === 0) {
+      return this.determineWinnersSimple();
+    }
+
+    // Evaluate all active players' hands
+    const playerHands = activePlayers.map(player => {
+      const allCards = [...player.hand, ...this.communityCards];
+      const handResult = HandEvaluator.evaluateHand(allCards);
+      return { player, handResult };
+    });
+
+    const allWinners = [];
+
+    // Process each pot from side pots to main pot
+    for (let i = this.pots.length - 1; i >= 0; i--) {
+      const pot = this.pots[i];
+      
+      // Find eligible players for this pot
+      const eligibleHands = playerHands.filter(ph => 
+        pot.eligiblePlayers.includes(ph.player.id)
+      );
+
+      if (eligibleHands.length === 0) continue;
+
+      // Sort eligible players by hand strength
+      eligibleHands.sort((a, b) => 
+        HandEvaluator.compareHands(b.handResult, a.handResult)
+      );
+
+      // Find winners for this pot (handle ties)
+      const potWinners = [eligibleHands[0]];
+      for (let j = 1; j < eligibleHands.length; j++) {
+        if (HandEvaluator.compareHands(eligibleHands[j].handResult, potWinners[0].handResult) === 0) {
+          potWinners.push(eligibleHands[j]);
+        } else {
+          break;
+        }
+      }
+
+      // Distribute this pot
+      const winAmount = Math.floor(pot.amount / potWinners.length);
+      potWinners.forEach(({ player, handResult }) => {
+        player.chips += winAmount;
+        
+        // Check if this player is already in winners list
+        const existingWinner = allWinners.find(w => w.player.id === player.id);
+        if (existingWinner) {
+          existingWinner.winAmount += winAmount;
+        } else {
+          allWinners.push({
+            player,
+            hand: handResult,
+            winAmount
+          });
+        }
+      });
+    }
+
+    return allWinners;
+  }
+
+  // Fallback method for simple pot distribution (no side pots)
+  determineWinnersSimple() {
     const activePlayers = this.players.filter(p => !p.folded);
     
     if (activePlayers.length === 1) {
@@ -355,6 +469,7 @@ class PokerGame {
         suit: card.suit 
       })),
       pot: this.pot,
+      pots: this.pots,
       currentBet: this.currentBet,
       bettingRound: this.bettingRound,
       dealerIndex: this.dealerIndex,

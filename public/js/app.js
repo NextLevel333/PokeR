@@ -219,7 +219,7 @@ function updatePotDisplay(state) {
     const potElement = document.querySelector('.pot-amount');
     
     // If there are side pots, display them
-    if (state.pots && state.pots.length > 0) {
+    if (state.pots && state.pots.length) {
         const totalPot = state.pots.reduce((sum, pot) => sum + pot.amount, 0);
         
         // Show total pot with side pot breakdown if multiple pots
@@ -228,10 +228,8 @@ function updatePotDisplay(state) {
         } else {
             let potText = '$' + totalPot;
             potText += ' (Main: $' + state.pots[0].amount;
-            if (state.pots.length > 1) {
-                for (let i = 1; i < state.pots.length; i++) {
-                    potText += ', Side ' + i + ': $' + state.pots[i].amount;
-                }
+            for (let i = 1; i < state.pots.length; i++) {
+                potText += ', Side ' + i + ': $' + state.pots[i].amount;
             }
             potText += ')';
             potElement.textContent = potText;

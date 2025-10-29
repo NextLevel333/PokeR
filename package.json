@@ -1,0 +1,17 @@
+{
+  "name": "poker-game",
+  "version": "1.0.0",
+  "description": "Online multiplayer Texas Hold'em poker game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["poker", "texas-holdem", "multiplayer", "socket.io"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1"
+  }
+}

@@ -199,8 +199,8 @@ function showGame() {
 function updateGameState(state) {
     if (!state) return;
 
-    // Update pot
-    document.querySelector('.pot-amount').textContent = '$' + state.pot;
+    // Update pot display
+    updatePotDisplay(state);
 
     // Update community cards
     updateCommunityCards(state.communityCards);
@@ -213,6 +213,33 @@ function updateGameState(state) {
 
     // Update player hand
     updatePlayerHand(state);
+}
+
+function updatePotDisplay(state) {
+    const potElement = document.querySelector('.pot-amount');
+    
+    // If there are side pots, display them
+    if (state.pots && state.pots.length > 0) {
+        const totalPot = state.pots.reduce((sum, pot) => sum + pot.amount, 0);
+        
+        // Show total pot with side pot breakdown if multiple pots
+        if (state.pots.length === 1) {
+            potElement.textContent = '$' + totalPot;
+        } else {
+            let potText = '$' + totalPot;
+            potText += ' (Main: $' + state.pots[0].amount;
+            if (state.pots.length > 1) {
+                for (let i = 1; i < state.pots.length; i++) {
+                    potText += ', Side ' + i + ': $' + state.pots[i].amount;
+                }
+            }
+            potText += ')';
+            potElement.textContent = potText;
+        }
+    } else {
+        // Fallback to simple pot display
+        potElement.textContent = '$' + state.pot;
+    }
 }
 
 function updateCommunityCards(cards) {

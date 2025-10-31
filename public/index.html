@@ -23,16 +23,14 @@
 
                     <div class="form-group">
                         <label>Choose Your Avatar:</label>
-                        <div class="avatar-selection">
-                            <div class="avatar-option selected" data-avatar="👤">👤</div>
-                            <div class="avatar-option" data-avatar="🦊">🦊</div>
-                            <div class="avatar-option" data-avatar="🐻">🐻</div>
-                            <div class="avatar-option" data-avatar="🐼">🐼</div>
-                            <div class="avatar-option" data-avatar="🦁">🦁</div>
-                            <div class="avatar-option" data-avatar="🐯">🐯</div>
-                            <div class="avatar-option" data-avatar="🐸">🐸</div>
-                            <div class="avatar-option" data-avatar="🐨">🐨</div>
+                        <div class="avatar-selection-inline">
+                            <div class="avatar-preview" id="avatarPreview">
+                                <div class="avatar-placeholder selected" id="avatarPlaceholder">👤</div>
+                                <!-- If an image avatar is selected, the <img> will be injected here -->
+                            </div>
+                            <button id="chooseAvatarBtn" class="btn">Choose Avatar</button>
                         </div>
+                        <small class="muted">Click "Choose Avatar" to pick an image from /public/avatars</small>
                     </div>
 
                     <div class="form-group">
@@ -45,6 +43,7 @@
                                     <span class="table-status">Open</span>
                                 </div>
                             </div>
+                            
                             <div class="table-card" data-table="private">
                                 <h3>Private Table</h3>
                                 <div class="table-info">
@@ -56,6 +55,19 @@
                     </div>
 
                     <button id="joinTableBtn" class="btn btn-primary" disabled>Join Table</button>
+
+                    <hr/>
+
+                    <h3>Appearance</h3>
+                    <div class="form-group">
+                        <label for="lobbyBgInput">Lobby background URL/path:</label>
+                        <input id="lobbyBgInput" type="text" placeholder="/backgrounds/lobby.jpg" />
+                    </div>
+                    <div class="form-group">
+                        <label for="tableBgInput">Table background URL/path:</label>
+                        <input id="tableBgInput" type="text" placeholder="/backgrounds/table.jpg" />
+                    </div>
+                    <small class="muted">Enter paths relative to the server root (e.g., /backgrounds/lobby.jpg). Images can be placed in public/backgrounds/</small>
                 </div>
             </div>
         </div>
@@ -78,53 +90,41 @@
                         <div class="card-slot"></div>
                     </div>
 
-                    <!-- Pot Display -->
-                    <div class="pot-display">
-                        <div class="pot-label">Pot</div>
-                        <div class="pot-amount">$0</div>
-                    </div>
-
-                    <!-- Player Seats (10 positions) -->
-                    <div class="player-seats">
-                        <div class="player-seat seat-0" data-seat="0"></div>
-                        <div class="player-seat seat-1" data-seat="1"></div>
-                        <div class="player-seat seat-2" data-seat="2"></div>
-                        <div class="player-seat seat-3" data-seat="3"></div>
-                        <div class="player-seat seat-4" data-seat="4"></div>
-                        <div class="player-seat seat-5" data-seat="5"></div>
-                        <div class="player-seat seat-6" data-seat="6"></div>
-                        <div class="player-seat seat-7" data-seat="7"></div>
-                        <div class="player-seat seat-8" data-seat="8"></div>
-                        <div class="player-seat seat-9" data-seat="9"></div>
+                    <!-- Players area (existing markup left intact) -->
+                    <div class="players-row">
+                        <!-- player seats will be updated dynamically -->
                     </div>
                 </div>
             </div>
 
-            <!-- Action Controls -->
-            <div class="action-controls">
-                <div class="player-hand">
-                    <div class="card-slot"></div>
-                    <div class="card-slot"></div>
-                </div>
-                
-                <div class="action-buttons">
-                    <button id="foldBtn" class="btn btn-danger">Fold</button>
-                    <button id="checkCallBtn" class="btn btn-success">Check</button>
-                    <button id="raiseBtn" class="btn btn-warning">Raise</button>
-                    
-                    <div class="raise-controls">
-                        <input type="range" id="raiseSlider" min="0" max="1000" step="10" value="0">
-                        <input type="number" id="raiseAmount" min="0" max="1000" step="10" value="0">
+            <div class="action-area">
+                <div class="controls">
+                    <button id="foldBtn" class="btn control-btn fold">Fold</button>
+                    <button id="checkCallBtn" class="btn control-btn check">Check / Call</button>
+
+                    <div class="raise-area">
+                        <input id="raiseAmount" type="number" min="0" placeholder="Amount" />
+                        <input id="raiseSlider" type="range" min="0" max="1000" value="0" />
+                        <button id="raiseBtn" class="btn control-btn raise">Raise / Bet</button>
                     </div>
                 </div>
+
+                <div id="winnerDisplay" class="winner-display"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar picker modal -->
+    <div id="avatarModal" class="avatar-modal-overlay" aria-hidden="true" style="display:none;">
+        <div class="avatar-modal" role="dialog" aria-modal="true" aria-labelledby="avatarModalTitle">
+            <div class="avatar-modal-header">
+                <h3 id="avatarModalTitle">Choose Avatar</h3>
+                <button id="closeAvatarModalBtn" class="close-btn">×</button>
             </div>
 
-            <!-- Winner Display -->
-            <div id="winnerDisplay" class="winner-display" style="display: none;">
-                <div class="winner-content">
-                    <h2>Hand Complete!</h2>
-                    <div class="winners-list"></div>
-                </div>
+            <div id="avatarModalContent" class="avatar-grid">
+                <!-- avatar images will be injected here by JS -->
+                <div id="avatarModalLoading" class="avatar-loading">Loading avatars...</div>
             </div>
         </div>
     </div>

@@ -11,11 +11,54 @@ const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
 
+// Simple rate limiting for API endpoints
+const apiRateLimits = new Map();
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 30; // 30 requests per minute
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const clientData = apiRateLimits.get(ip);
+  
+  if (!clientData) {
+    apiRateLimits.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return true;
+  }
+  
+  if (now > clientData.resetTime) {
+    apiRateLimits.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return true;
+  }
+  
+  if (clientData.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return false;
+  }
+  
+  clientData.count++;
+  return true;
+}
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // New API: list avatars in public/avatars
+let avatarsCache = null;
+let avatarsCacheTime = 0;
+const CACHE_TTL = 60000; // Cache for 1 minute
+
 app.get('/api/avatars', (req, res) => {
+  // Rate limiting
+  const clientIp = req.ip || req.connection.remoteAddress;
+  if (!checkRateLimit(clientIp)) {
+    return res.status(429).json({ error: 'Too many requests, please try again later' });
+  }
+  
+  // Check cache
+  const now = Date.now();
+  if (avatarsCache && (now - avatarsCacheTime) < CACHE_TTL) {
+    return res.json(avatarsCache);
+  }
+  
   const avatarsDir = path.join(__dirname, 'public', 'avatars');
   fs.readdir(avatarsDir, (err, files) => {
     if (err) {
@@ -26,7 +69,11 @@ app.get('/api/avatars', (req, res) => {
     const imageFiles = files
       .filter(f => /\.(png|jpe?g|gif|svg)$/i.test(f))
       .map(f => `/avatars/${f}`);
-    res.json({ avatars: imageFiles });
+    
+    const result = { avatars: imageFiles };
+    avatarsCache = result;
+    avatarsCacheTime = now;
+    res.json(result);
   });
 });
 

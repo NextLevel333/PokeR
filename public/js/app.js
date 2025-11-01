@@ -45,9 +45,6 @@ function setupLobby() {
     // Modal close handlers
     closeAvatarModal.addEventListener('click', closeAvatarModalFn);
     avatarModalBackdrop.addEventListener('click', closeAvatarModalFn);
-    
-    // Load avatars when modal opens
-    loadAvatars();
 
     // Table selection
     document.querySelectorAll('.table-card').forEach(card => {
@@ -70,9 +67,17 @@ function setupLobby() {
 }
 
 // Avatar modal functions
+let avatarsLoaded = false;
+
 function openAvatarModal() {
     avatarModal.style.display = 'block';
     avatarModal.setAttribute('aria-hidden', 'false');
+    
+    // Lazy load avatars on first open
+    if (!avatarsLoaded) {
+        loadAvatars();
+        avatarsLoaded = true;
+    }
 }
 
 function closeAvatarModalFn() {

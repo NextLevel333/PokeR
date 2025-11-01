@@ -23,6 +23,14 @@ const raiseSlider = document.getElementById('raiseSlider');
 const raiseAmount = document.getElementById('raiseAmount');
 const winnerDisplay = document.getElementById('winnerDisplay');
 
+// Avatar modal elements
+const chooseAvatarBtn = document.getElementById('chooseAvatarBtn');
+const avatarModal = document.getElementById('avatarModal');
+const avatarModalBackdrop = document.getElementById('avatarModalBackdrop');
+const closeAvatarModal = document.getElementById('closeAvatarModal');
+const avatarPreview = document.getElementById('avatarPreview');
+const avatarGallery = document.getElementById('avatarGallery');
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     setupLobby();
@@ -31,14 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Lobby Setup
 function setupLobby() {
-    // Avatar selection
-    document.querySelectorAll('.avatar-option').forEach(option => {
-        option.addEventListener('click', () => {
-            document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
-            option.classList.add('selected');
-            gameState.avatar = option.dataset.avatar;
-        });
-    });
+    // Avatar chooser button
+    chooseAvatarBtn.addEventListener('click', openAvatarModal);
+    
+    // Modal close handlers
+    closeAvatarModal.addEventListener('click', closeAvatarModalFn);
+    avatarModalBackdrop.addEventListener('click', closeAvatarModalFn);
+    
+    // Load avatars when modal opens
+    loadAvatars();
 
     // Table selection
     document.querySelectorAll('.table-card').forEach(card => {
@@ -58,6 +67,64 @@ function setupLobby() {
 
     // Request lobby info
     socket.emit('joinLobby', {});
+}
+
+// Avatar modal functions
+function openAvatarModal() {
+    avatarModal.style.display = 'block';
+    avatarModal.setAttribute('aria-hidden', 'false');
+}
+
+function closeAvatarModalFn() {
+    avatarModal.style.display = 'none';
+    avatarModal.setAttribute('aria-hidden', 'true');
+}
+
+function loadAvatars() {
+    fetch('/api/avatars')
+        .then(response => response.json())
+        .then(data => {
+            avatarGallery.innerHTML = '';
+            
+            if (!data.avatars || data.avatars.length === 0) {
+                avatarGallery.innerHTML = '<div class="empty">No avatars found</div>';
+                return;
+            }
+            
+            data.avatars.forEach(avatarPath => {
+                const thumb = document.createElement('div');
+                thumb.className = 'avatar-thumb';
+                thumb.dataset.avatar = avatarPath;
+                
+                const img = document.createElement('img');
+                img.src = avatarPath;
+                img.alt = 'Avatar';
+                
+                thumb.appendChild(img);
+                thumb.addEventListener('click', () => {
+                    gameState.avatar = avatarPath;
+                    updateAvatarPreview(avatarPath);
+                    closeAvatarModalFn();
+                });
+                
+                avatarGallery.appendChild(thumb);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading avatars:', error);
+            avatarGallery.innerHTML = '<div class="error">Failed to load avatars</div>';
+        });
+}
+
+function updateAvatarPreview(avatarPath) {
+    avatarPreview.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = avatarPath;
+    img.alt = 'Selected avatar';
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    avatarPreview.appendChild(img);
 }
 
 function updateJoinButton() {
@@ -284,7 +351,19 @@ function updatePlayers(state) {
         
         const avatar = document.createElement('div');
         avatar.className = 'player-avatar';
-        avatar.textContent = player.avatar;
+        
+        // Check if avatar is an image path or emoji
+        if (player.avatar.startsWith('/avatars/')) {
+            const img = document.createElement('img');
+            img.src = player.avatar;
+            img.alt = player.name;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            avatar.appendChild(img);
+        } else {
+            avatar.textContent = player.avatar;
+        }
         
         const name = document.createElement('div');
         name.className = 'player-name';

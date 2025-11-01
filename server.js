@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
+const fs = require('fs');
 const { PokerGame } = require('./game/pokerGame');
 
 const app = express();
@@ -12,6 +13,22 @@ const PORT = process.env.PORT || 3000;
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+// New API: list avatars in public/avatars
+app.get('/api/avatars', (req, res) => {
+  const avatarsDir = path.join(__dirname, 'public', 'avatars');
+  fs.readdir(avatarsDir, (err, files) => {
+    if (err) {
+      console.error('Error reading avatars directory:', err);
+      // Return empty list if directory missing or unreadable
+      return res.json({ avatars: [] });
+    }
+    const imageFiles = files
+      .filter(f => /\.(png|jpe?g|gif|svg)$/i.test(f))
+      .map(f => `/avatars/${f}`);
+    res.json({ avatars: imageFiles });
+  });
+});
 
 // Game state
 const tables = {
@@ -115,38 +132,30 @@ io.on('connection', (socket) => {
 
   // Player leaves table
   socket.on('leaveTable', () => {
-    if (socket.tableId) {
-      const table = tables[socket.tableId];
-      table.removePlayer(socket.id);
-      
-      io.to(socket.tableId).emit('playerLeft', {
-        playerId: socket.id,
-        gameState: table.getGameState()
-      });
+    if (!socket.tableId) return;
+    const table = tables[socket.tableId];
+    if (!table) return;
 
-      socket.leave(socket.tableId);
-      socket.tableId = null;
-    }
+    table.removePlayer(socket.id);
+    socket.leave(socket.tableId);
+
+    io.to(socket.tableId).emit('playerLeft', { playerId: socket.id });
+
+    socket.tableId = null;
   });
 
-  // Disconnect
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
-    
     if (socket.tableId) {
       const table = tables[socket.tableId];
       if (table) {
         table.removePlayer(socket.id);
-        
-        io.to(socket.tableId).emit('playerLeft', {
-          playerId: socket.id,
-          gameState: table.getGameState()
-        });
+        io.to(socket.tableId).emit('playerLeft', { playerId: socket.id });
       }
     }
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`Poker server running on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });

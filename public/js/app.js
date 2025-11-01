@@ -78,7 +78,12 @@ function fetchAndDisplayAvatars() {
     avatarGallery.innerHTML = '<div class="loading-message">Loading avatars...</div>';
     
     fetch('/api/avatars')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch avatars');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.avatars.length === 0) {
                 avatarGallery.innerHTML = '<div class="empty-message">No avatars found</div>';
@@ -96,7 +101,7 @@ function fetchAndDisplayAvatars() {
                 const img = document.createElement('img');
                 img.src = avatarPath;
                 img.alt = 'Avatar';
-                img.addEventListener('click', () => selectAvatar(avatarPath));
+                img.addEventListener('click', (e) => selectAvatar(avatarPath, e));
                 
                 thumb.appendChild(img);
                 avatarGallery.appendChild(thumb);
@@ -108,7 +113,7 @@ function fetchAndDisplayAvatars() {
         });
 }
 
-function selectAvatar(avatarPath) {
+function selectAvatar(avatarPath, event) {
     gameState.avatar = avatarPath;
     
     // Update preview
@@ -125,7 +130,9 @@ function selectAvatar(avatarPath) {
     document.querySelectorAll('.avatar-thumb').forEach(thumb => {
         thumb.classList.remove('selected');
     });
-    event.target.closest('.avatar-thumb').classList.add('selected');
+    if (event && event.target) {
+        event.target.closest('.avatar-thumb').classList.add('selected');
+    }
     
     // Close modal
     closeAvatarModalHandler();

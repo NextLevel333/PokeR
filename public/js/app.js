@@ -40,9 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
 // Lobby Setup
 function setupLobby() {
     // Avatar chooser
-    chooseAvatarBtn.addEventListener('click', openAvatarModal);
-    closeAvatarModal.addEventListener('click', closeAvatarModalHandler);
-    avatarModalBackdrop.addEventListener('click', closeAvatarModalHandler);
+    if (chooseAvatarBtn) {
+        chooseAvatarBtn.addEventListener('click', openAvatarModal);
+    }
+    if (closeAvatarModal) {
+        closeAvatarModal.addEventListener('click', closeAvatarModalHandler);
+    }
+    if (avatarModalBackdrop) {
+        avatarModalBackdrop.addEventListener('click', closeAvatarModalHandler);
+    }
 
     // Table selection
     document.querySelectorAll('.table-card').forEach(card => {
@@ -55,10 +61,14 @@ function setupLobby() {
     });
 
     // Player name input
-    playerNameInput.addEventListener('input', updateJoinButton);
+    if (playerNameInput) {
+        playerNameInput.addEventListener('input', updateJoinButton);
+    }
 
     // Join table button
-    joinTableBtn.addEventListener('click', joinTable);
+    if (joinTableBtn) {
+        joinTableBtn.addEventListener('click', joinTable);
+    }
 
     // Request lobby info
     socket.emit('joinLobby', {});
@@ -101,9 +111,12 @@ function fetchAndDisplayAvatars() {
                 const img = document.createElement('img');
                 img.src = avatarPath;
                 img.alt = 'Avatar';
-                img.addEventListener('click', (e) => selectAvatar(avatarPath, e));
                 
                 thumb.appendChild(img);
+                
+                // Attach event to thumb container for better reliability
+                thumb.addEventListener('click', (e) => selectAvatar(avatarPath, e));
+                
                 avatarGallery.appendChild(thumb);
             });
         })
@@ -129,7 +142,10 @@ function selectAvatar(avatarPath, event) {
         thumb.classList.remove('selected');
     });
     if (event && event.target) {
-        event.target.closest('.avatar-thumb').classList.add('selected');
+        const thumb = event.target.closest('.avatar-thumb');
+        if (thumb) {
+            thumb.classList.add('selected');
+        }
     }
     
     // Close modal

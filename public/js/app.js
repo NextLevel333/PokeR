@@ -121,9 +121,7 @@ function selectAvatar(avatarPath, event) {
     const img = document.createElement('img');
     img.src = avatarPath;
     img.alt = 'Selected Avatar';
-    img.style.width = '100%';
-    img.style.height = '100%';
-    img.style.objectFit = 'cover';
+    img.className = 'avatar-preview-img';
     avatarPreview.appendChild(img);
     
     // Update selection in gallery
@@ -368,10 +366,7 @@ function updatePlayers(state) {
             const img = document.createElement('img');
             img.src = player.avatar;
             img.alt = player.name;
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = 'cover';
-            img.style.borderRadius = '50%';
+            img.className = 'player-avatar-img';
             avatar.appendChild(img);
         } else {
             avatar.textContent = player.avatar || '👤';
@@ -502,22 +497,44 @@ function showWinners(winners) {
 
     winners.forEach(winner => {
         const winnerDiv = document.createElement('div');
+        winnerDiv.className = 'winner-item';
         
-        // Create avatar display (image or emoji)
-        let avatarDisplay = '';
+        const winnerContent = document.createElement('div');
+        winnerContent.className = 'winner-info';
+        
+        // Create avatar element
+        let avatarElement;
         if (winner.player.avatar && winner.player.avatar.startsWith('/')) {
-            avatarDisplay = `<img src="${winner.player.avatar}" alt="${winner.player.name}" style="width: 50px; height: 50px; border-radius: 50%; vertical-align: middle; margin-right: 10px;">`;
+            avatarElement = document.createElement('img');
+            avatarElement.src = winner.player.avatar;
+            avatarElement.alt = winner.player.name;
+            avatarElement.className = 'winner-avatar-img';
         } else {
-            avatarDisplay = `<span style="font-size: 1.5em; margin-right: 10px;">${winner.player.avatar || '👤'}</span>`;
+            avatarElement = document.createElement('span');
+            avatarElement.className = 'winner-avatar-emoji';
+            avatarElement.textContent = winner.player.avatar || '👤';
         }
         
-        winnerDiv.innerHTML = `
-            <div style="margin: 15px 0;">
-                <div style="font-size: 1.5em;">${avatarDisplay}${winner.player.name}</div>
-                <div style="color: #4CAF50; margin-top: 5px;">${winner.hand?.description || 'Winner'}</div>
-                <div style="color: #ffd700; margin-top: 5px;">Won $${winner.winAmount}</div>
-            </div>
-        `;
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = winner.player.name;
+        
+        const playerDiv = document.createElement('div');
+        playerDiv.className = 'winner-player';
+        playerDiv.appendChild(avatarElement);
+        playerDiv.appendChild(nameSpan);
+        
+        const handDiv = document.createElement('div');
+        handDiv.className = 'winner-hand';
+        handDiv.textContent = winner.hand?.description || 'Winner';
+        
+        const amountDiv = document.createElement('div');
+        amountDiv.className = 'winner-amount';
+        amountDiv.textContent = `Won $${winner.winAmount}`;
+        
+        winnerContent.appendChild(playerDiv);
+        winnerContent.appendChild(handDiv);
+        winnerContent.appendChild(amountDiv);
+        winnerDiv.appendChild(winnerContent);
         winnersList.appendChild(winnerDiv);
     });
 

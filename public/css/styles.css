@@ -103,6 +103,12 @@ body {
     overflow: hidden;
 }
 
+.avatar-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .btn-small {
     padding: 10px 20px;
     font-size: 0.9em;
@@ -504,6 +510,13 @@ body {
     margin-bottom: 5px;
 }
 
+.player-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
 .player-name {
     font-size: 0.9em;
     font-weight: bold;
@@ -672,6 +685,41 @@ body {
 .winners-list {
     font-size: 1.3em;
     line-height: 1.8;
+}
+
+.winner-item {
+    margin: 15px 0;
+}
+
+.winner-info {
+    font-size: 1.5em;
+}
+
+.winner-player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.winner-avatar-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.winner-avatar-emoji {
+    font-size: 1.5em;
+}
+
+.winner-hand {
+    color: #4CAF50;
+    margin-top: 5px;
+}
+
+.winner-amount {
+    color: #ffd700;
+    margin-top: 5px;
 }
 
 /* Animations */

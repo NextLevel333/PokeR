@@ -24,10 +24,16 @@ app.get('/api/avatars', (req, res) => {
       return res.json({ avatars: [] });
     }
     
-    // Filter for image files
+    // Filter for image files and ensure they're in the avatars directory
     const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg'];
     const avatars = files
-      .filter(file => imageExtensions.some(ext => file.toLowerCase().endsWith(ext)))
+      .filter(file => {
+        // Prevent directory traversal by checking for path separators
+        if (file.includes('/') || file.includes('\\') || file.includes('..')) {
+          return false;
+        }
+        return imageExtensions.some(ext => file.toLowerCase().endsWith(ext));
+      })
       .map(file => `/avatars/${file}`);
     
     res.json({ avatars });

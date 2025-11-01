@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
+const fs = require('fs');
 const { PokerGame } = require('./game/pokerGame');
 
 const app = express();
@@ -10,8 +11,71 @@ const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
 
+// Simple rate limiting for API endpoints
+const apiRateLimits = new Map();
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 30; // 30 requests per minute
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const clientData = apiRateLimits.get(ip);
+  
+  if (!clientData) {
+    apiRateLimits.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return true;
+  }
+  
+  if (now > clientData.resetTime) {
+    apiRateLimits.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return true;
+  }
+  
+  if (clientData.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return false;
+  }
+  
+  clientData.count++;
+  return true;
+}
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+// New API: list avatars in public/avatars
+let avatarsCache = null;
+let avatarsCacheTime = 0;
+const CACHE_TTL = 60000; // Cache for 1 minute
+
+app.get('/api/avatars', (req, res) => {
+  // Rate limiting
+  const clientIp = req.ip || req.connection.remoteAddress;
+  if (!checkRateLimit(clientIp)) {
+    return res.status(429).json({ error: 'Too many requests, please try again later' });
+  }
+  
+  // Check cache
+  const now = Date.now();
+  if (avatarsCache && (now - avatarsCacheTime) < CACHE_TTL) {
+    return res.json(avatarsCache);
+  }
+  
+  const avatarsDir = path.join(__dirname, 'public', 'avatars');
+  fs.readdir(avatarsDir, (err, files) => {
+    if (err) {
+      console.error('Error reading avatars directory:', err);
+      // Return empty list if directory missing or unreadable
+      return res.json({ avatars: [] });
+    }
+    const imageFiles = files
+      .filter(f => /\.(png|jpe?g|gif|svg)$/i.test(f))
+      .map(f => `/avatars/${f}`);
+    
+    const result = { avatars: imageFiles };
+    avatarsCache = result;
+    avatarsCacheTime = now;
+    res.json(result);
+  });
+});
 
 // Game state
 const tables = {
@@ -115,38 +179,30 @@ io.on('connection', (socket) => {
 
   // Player leaves table
   socket.on('leaveTable', () => {
-    if (socket.tableId) {
-      const table = tables[socket.tableId];
-      table.removePlayer(socket.id);
-      
-      io.to(socket.tableId).emit('playerLeft', {
-        playerId: socket.id,
-        gameState: table.getGameState()
-      });
+    if (!socket.tableId) return;
+    const table = tables[socket.tableId];
+    if (!table) return;
 
-      socket.leave(socket.tableId);
-      socket.tableId = null;
-    }
+    table.removePlayer(socket.id);
+    socket.leave(socket.tableId);
+
+    io.to(socket.tableId).emit('playerLeft', { playerId: socket.id });
+
+    socket.tableId = null;
   });
 
-  // Disconnect
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
-    
     if (socket.tableId) {
       const table = tables[socket.tableId];
       if (table) {
         table.removePlayer(socket.id);
-        
-        io.to(socket.tableId).emit('playerLeft', {
-          playerId: socket.id,
-          gameState: table.getGameState()
-        });
+        io.to(socket.tableId).emit('playerLeft', { playerId: socket.id });
       }
     }
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`Poker server running on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });

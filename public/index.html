@@ -23,16 +23,28 @@
 
                     <div class="form-group">
                         <label>Choose Your Avatar:</label>
-                        <div class="avatar-selection">
-                            <div class="avatar-option selected" data-avatar="👤">👤</div>
-                            <div class="avatar-option" data-avatar="🦊">🦊</div>
-                            <div class="avatar-option" data-avatar="🐻">🐻</div>
-                            <div class="avatar-option" data-avatar="🐼">🐼</div>
-                            <div class="avatar-option" data-avatar="🦁">🦁</div>
-                            <div class="avatar-option" data-avatar="🐯">🐯</div>
-                            <div class="avatar-option" data-avatar="🐸">🐸</div>
-                            <div class="avatar-option" data-avatar="🐨">🐨</div>
+                        <div class="avatar-chooser">
+                            <button id="chooseAvatarBtn" class="btn btn-secondary">Choose Avatar</button>
+                            <div id="avatarPreview" class="avatar-preview" title="Selected avatar">👤</div>
                         </div>
+
+                        <!-- Avatar modal (hidden by default) -->
+                        <div id="avatarModal" class="modal" aria-hidden="true">
+                            <div class="modal-backdrop" id="avatarModalBackdrop"></div>
+                            <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="avatarModalTitle">
+                                <div class="modal-header">
+                                    <h3 id="avatarModalTitle">Choose Avatar</h3>
+                                    <button id="closeAvatarModal" class="btn close-btn" aria-label="Close">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="avatarGallery" class="avatar-gallery">
+                                        <!-- Thumbnails inserted here by JS -->
+                                        <div class="loading">Loading...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div class="form-group">

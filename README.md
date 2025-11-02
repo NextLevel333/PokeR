@@ -11,7 +11,7 @@ A real-time multiplayer Texas Hold'em poker game built with Node.js, Express, an
   - 7-card hand evaluation (2 hole cards + 5 community cards)
   - All betting rounds: Pre-flop, Flop, Turn, and River
   - Small blind and big blind system ($10/$20)
-  - Pot management and winner determination
+  - Full Pot + Side Pot management and winner determination
   - Support for fold, check, call, raise, and all-in actions
 
 ### UI Features

@@ -23,9 +23,15 @@
 
                     <div class="form-group">
                         <label>Choose Your Avatar:</label>
-                        <div class="avatar-chooser">
-                            <div class="avatar-preview" id="avatarPreview">👤</div>
-                            <button type="button" id="chooseAvatarBtn" class="btn btn-small">Choose Avatar</button>
+                        <div class="avatar-selection">
+                            <div class="avatar-option selected" data-avatar="👤">👤</div>
+                            <div class="avatar-option" data-avatar="🦊">🦊</div>
+                            <div class="avatar-option" data-avatar="🐻">🐻</div>
+                            <div class="avatar-option" data-avatar="🐼">🐼</div>
+                            <div class="avatar-option" data-avatar="🦁">🦁</div>
+                            <div class="avatar-option" data-avatar="🐯">🐯</div>
+                            <div class="avatar-option" data-avatar="🐸">🐸</div>
+                            <div class="avatar-option" data-avatar="🐨">🐨</div>
                         </div>
                     </div>
 
@@ -118,22 +124,6 @@
                 <div class="winner-content">
                     <h2>Hand Complete!</h2>
                     <div class="winners-list"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Avatar Modal -->
-    <div id="avatarModal" class="modal" style="display: none;">
-        <div class="modal-backdrop" id="avatarModalBackdrop"></div>
-        <div class="modal-panel">
-            <div class="modal-header">
-                <h2>Choose Your Avatar</h2>
-                <button class="modal-close" id="closeAvatarModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="avatarGallery" class="avatar-gallery">
-                    <div class="loading-message">Loading avatars...</div>
                 </div>
             </div>
         </div>

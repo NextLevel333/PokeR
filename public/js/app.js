@@ -27,6 +27,8 @@ const winnerDisplay = document.getElementById('winnerDisplay');
 document.addEventListener('DOMContentLoaded', () => {
     setupLobby();
     setupGameControls();
+    setupAvatarModal();
+    updateAvatarPreview();
 });
 
 // Lobby Setup
@@ -58,6 +60,151 @@ function setupLobby() {
 
     // Request lobby info
     socket.emit('joinLobby', {});
+}
+
+// Avatar Modal Setup
+function setupAvatarModal() {
+    const chooseAvatarBtn = document.getElementById('chooseAvatarBtn');
+    const closeAvatarModalBtn = document.getElementById('closeAvatarModal');
+    const avatarModalBackdrop = document.getElementById('avatarModalBackdrop');
+    
+    if (chooseAvatarBtn) {
+        chooseAvatarBtn.addEventListener('click', openAvatarModal);
+    }
+    
+    if (closeAvatarModalBtn) {
+        closeAvatarModalBtn.addEventListener('click', closeAvatarModal);
+    }
+    
+    if (avatarModalBackdrop) {
+        avatarModalBackdrop.addEventListener('click', closeAvatarModal);
+    }
+}
+
+function openAvatarModal() {
+    const modal = document.getElementById('avatarModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open');
+        loadAvatars();
+    }
+}
+
+function closeAvatarModal() {
+    const modal = document.getElementById('avatarModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+    }
+}
+
+function loadAvatars() {
+    const avatarGallery = document.getElementById('avatarGallery');
+    if (!avatarGallery) return;
+    
+    // Show loading message
+    avatarGallery.innerHTML = '<div class="loading-message">Loading avatars...</div>';
+    
+    // Fetch avatar list
+    fetch('/avatars/list.json')
+        .then(response => response.json())
+        .then(avatars => {
+            avatarGallery.innerHTML = '';
+            
+            // Add each avatar as a thumbnail
+            avatars.forEach(avatarFile => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'avatar-thumbnail';
+                
+                // Check if current avatar matches this one
+                const avatarPath = `/avatars/${avatarFile}`;
+                if (gameState.avatar === avatarPath) {
+                    thumbnail.classList.add('selected');
+                }
+                
+                const img = document.createElement('img');
+                img.src = avatarPath;
+                img.alt = 'Avatar';
+                
+                thumbnail.appendChild(img);
+                
+                // Add click handler
+                thumbnail.addEventListener('click', () => {
+                    selectAvatar(avatarPath);
+                });
+                
+                avatarGallery.appendChild(thumbnail);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading avatars:', error);
+            avatarGallery.innerHTML = '<div class="loading-message">Error loading avatars. Please try again.</div>';
+        });
+}
+
+function selectAvatar(avatarPath) {
+    // Update game state
+    gameState.avatar = avatarPath;
+    
+    // Update preview
+    updateAvatarPreview();
+    
+    // Update selected state in gallery
+    const thumbnails = document.querySelectorAll('.avatar-thumbnail');
+    thumbnails.forEach(thumb => {
+        thumb.classList.remove('selected');
+        const img = thumb.querySelector('img');
+        if (img && img.src.endsWith(avatarPath)) {
+            thumb.classList.add('selected');
+        }
+    });
+    
+    // Close modal
+    closeAvatarModal();
+}
+
+function updateAvatarPreview() {
+    const avatarPreview = document.getElementById('avatarPreview');
+    if (!avatarPreview) return;
+    
+    avatarPreview.innerHTML = '';
+    
+    // Check if avatar is an image URL or emoji/text
+    if (isImageAvatar(gameState.avatar)) {
+        const img = document.createElement('img');
+        img.src = gameState.avatar;
+        img.alt = 'Avatar';
+        avatarPreview.appendChild(img);
+    } else {
+        avatarPreview.textContent = gameState.avatar;
+    }
+}
+
+function isImageAvatar(avatar) {
+    // Check if avatar is an image URL or path
+    return avatar && (
+        avatar.startsWith('/avatars/') ||
+        avatar.startsWith('http://') ||
+        avatar.startsWith('https://') ||
+        avatar.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+    );
+}
+
+function renderPlayerAvatarElement(player) {
+    const avatar = document.createElement('div');
+    avatar.className = 'player-avatar';
+    
+    // Check if avatar is an image URL or emoji/text
+    if (isImageAvatar(player.avatar)) {
+        const img = document.createElement('img');
+        img.src = player.avatar;
+        img.alt = player.name;
+        avatar.appendChild(img);
+    } else {
+        avatar.textContent = player.avatar;
+    }
+    
+    return avatar;
 }
 
 function updateJoinButton() {
@@ -282,9 +429,7 @@ function updatePlayers(state) {
         const playerInfo = document.createElement('div');
         playerInfo.className = 'player-info';
         
-        const avatar = document.createElement('div');
-        avatar.className = 'player-avatar';
-        avatar.textContent = player.avatar;
+        const avatar = renderPlayerAvatarElement(player);
         
         const name = document.createElement('div');
         name.className = 'player-name';
@@ -411,13 +556,50 @@ function showWinners(winners) {
 
     winners.forEach(winner => {
         const winnerDiv = document.createElement('div');
-        winnerDiv.innerHTML = `
-            <div style="margin: 15px 0;">
-                <div style="font-size: 1.5em;">${winner.player.avatar} ${winner.player.name}</div>
-                <div style="color: #4CAF50; margin-top: 5px;">${winner.hand?.description || 'Winner'}</div>
-                <div style="color: #ffd700; margin-top: 5px;">Won $${winner.winAmount}</div>
-            </div>
-        `;
+        winnerDiv.style.margin = '15px 0';
+        
+        // Create avatar element
+        const avatarDisplay = document.createElement('div');
+        avatarDisplay.style.fontSize = '1.5em';
+        avatarDisplay.style.display = 'inline-block';
+        
+        if (isImageAvatar(winner.player.avatar)) {
+            const img = document.createElement('img');
+            img.src = winner.player.avatar;
+            img.alt = winner.player.name;
+            img.style.width = '50px';
+            img.style.height = '50px';
+            img.style.borderRadius = '50%';
+            img.style.objectFit = 'cover';
+            img.style.verticalAlign = 'middle';
+            avatarDisplay.appendChild(img);
+        } else {
+            avatarDisplay.textContent = winner.player.avatar;
+        }
+        
+        // Create name element
+        const nameDisplay = document.createElement('span');
+        nameDisplay.style.fontSize = '1.5em';
+        nameDisplay.style.marginLeft = '10px';
+        nameDisplay.textContent = winner.player.name;
+        
+        // Create hand description
+        const handDesc = document.createElement('div');
+        handDesc.style.color = '#4CAF50';
+        handDesc.style.marginTop = '5px';
+        handDesc.textContent = winner.hand?.description || 'Winner';
+        
+        // Create win amount
+        const winAmountDiv = document.createElement('div');
+        winAmountDiv.style.color = '#ffd700';
+        winAmountDiv.style.marginTop = '5px';
+        winAmountDiv.textContent = `Won $${winner.winAmount}`;
+        
+        winnerDiv.appendChild(avatarDisplay);
+        winnerDiv.appendChild(nameDisplay);
+        winnerDiv.appendChild(handDesc);
+        winnerDiv.appendChild(winAmountDiv);
+        
         winnersList.appendChild(winnerDiv);
     });
 

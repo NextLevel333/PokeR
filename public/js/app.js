@@ -107,7 +107,10 @@ function loadAvatars() {
     
     // Fetch avatar list
     fetch('/avatars/list.json')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to load avatars');
+            return response.json();
+        })
         .then(avatars => {
             avatarGallery.innerHTML = '';
             
@@ -154,7 +157,7 @@ function selectAvatar(avatarPath) {
     thumbnails.forEach(thumb => {
         thumb.classList.remove('selected');
         const img = thumb.querySelector('img');
-        if (img && img.src.endsWith(avatarPath)) {
+        if (img && img.src.includes(avatarPath)) {
             thumb.classList.add('selected');
         }
     });
@@ -167,7 +170,7 @@ function updateAvatarPreview() {
     const avatarPreview = document.getElementById('avatarPreview');
     if (!avatarPreview) return;
     
-    avatarPreview.innerHTML = '';
+    avatarPreview.textContent = '';
     
     // Check if avatar is an image URL or emoji/text
     if (isImageAvatar(gameState.avatar)) {

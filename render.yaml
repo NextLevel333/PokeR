@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: poke-r-web
+    repo: https://github.com/NextLevel333/PokeR
+    branch: main
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production

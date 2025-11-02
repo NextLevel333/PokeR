@@ -2,7 +2,6 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
-const fs = require('fs');
 const { PokerGame } = require('./game/pokerGame');
 
 const app = express();
@@ -13,32 +12,6 @@ const PORT = process.env.PORT || 3000;
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
-
-// API endpoint to list avatars
-app.get('/api/avatars', (req, res) => {
-  const avatarsPath = path.join(__dirname, 'public', 'avatars');
-  
-  fs.readdir(avatarsPath, (err, files) => {
-    if (err) {
-      console.error('Error reading avatars directory:', err);
-      return res.json({ avatars: [] });
-    }
-    
-    // Filter for image files and ensure they're in the avatars directory
-    const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg'];
-    const avatars = files
-      .filter(file => {
-        // Prevent directory traversal by checking for path separators
-        if (file.includes('/') || file.includes('\\') || file.includes('..')) {
-          return false;
-        }
-        return imageExtensions.some(ext => file.toLowerCase().endsWith(ext));
-      })
-      .map(file => `/avatars/${file}`);
-    
-    res.json({ avatars });
-  });
-});
 
 // Game state
 const tables = {

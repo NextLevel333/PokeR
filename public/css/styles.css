@@ -16,11 +16,12 @@ body {
        If the image is served at /backgrounds/SPLPoker1.jpg this absolute path will work.
        Otherwise adjust the URL relative to this CSS file (public/css/styles.css). */
     background-image: url("/backgrounds/SPLPoker1.jpg");
+    backdrop-filter: blur(3px);
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    color: #fff;
+    color: #ffffff;
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
@@ -58,10 +59,13 @@ body::before {
 }
 
 .game-title {
-    font-size: 3em;
+    font-family: 'poker';
+    src: url('./fonts/poker.woff2') format('woff2');
+    font-size: 6em;
     margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(9, 255, 0, 0.396);
-    animation: fadeIn 2s ease-in;
+    color: #000000;
+    text-shadow: 4px 4px 8px rgb(0, 255, 0);
+    animation: fadeIn 0.5s ease-in;
 }
 
 .lobby-form {
@@ -274,7 +278,7 @@ body::before {
 .table-felt {
     position: relative;
     width: 900px;
-    height: 500px;
+    height: 550px;
     background: linear-gradient(135deg, #0a5f0a 0%, #0d8a0d 100%);
     border-radius: 275px / 225px;
     border: 15px solid #8B4513;

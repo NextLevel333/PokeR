@@ -33,7 +33,7 @@ body::before {
     content: "";
     position: fixed;
     inset: 0; /* top:0; right:0; bottom:0; left:0; */
-    background: rgba(0, 0, 0, 0.27); /* adjust opacity (0.25 - 0.6) as needed */
+    background: rgba(35, 35, 35, 0.27); /* adjust opacity (0.25 - 0.6) as needed */
     z-index: 0;
     pointer-events: none;
 }
@@ -50,11 +50,11 @@ body::before {
 
 /* Lobby Styles */
 .lobby-container {
-    max-width: 600px;
+    max-width: 400px;
     margin: 0 auto;
     padding: 40px 20px;
     text-align: center;
-    animation: fadeIn 2s ease-in;
+    animation: fadeIn 1s ease-in;
 
 }
 
@@ -62,12 +62,14 @@ body::before {
     font-family: 'poker';
     src: url('./fonts/poker.woff2') format('woff2');
     font-size: 6em;
-    margin-bottom: 20px;
+    margin-bottom: 1px;
     color: #000000;
-    text-shadow: 4px 4px 8px rgb(0, 255, 0);
-    animation: fadeIn 0.5s ease-in;
+    text-shadow: 4px 4px 4px rgb(0, 255, 0);
 }
-
+.game-title:hover {
+     transform: scale(1.1);
+}
+    
 .lobby-form {
     background: rgba(0, 0, 0, 0.37);
     backdrop-filter: blur(5px);
@@ -150,7 +152,7 @@ body::before {
 /* Table Selection */
 .table-selection {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2);
     gap: 20px;
 }
 
@@ -158,7 +160,7 @@ body::before {
     background: rgba(255, 255, 255, 0.15);
     border: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 15px;
-    padding: 25px;
+    padding: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -271,17 +273,17 @@ body::before {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 20px;
     min-height: 60vh;
 }
 
 .table-felt {
     position: relative;
     width: 900px;
-    height: 550px;
-    background: linear-gradient(135deg, #0a5f0a 0%, #0d8a0d 100%);
+    height: 500px;
+    background: radial-gradient(#0d8a0d 0%, #052b05 100%);
     border-radius: 275px / 225px;
-    border: 15px solid #8B4513;
+    border: 15px solid #6e3206;
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.3);
 }
 

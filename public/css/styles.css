@@ -15,8 +15,8 @@ body {
     /* Use the SPLPoker1.jpg background. 
        If the image is served at /backgrounds/SPLPoker1.jpg this absolute path will work.
        Otherwise adjust the URL relative to this CSS file (public/css/styles.css). */
-    background-image: url("/backgrounds/SPLPoker1.jpg");
-    backdrop-filter: blur(3px);
+    background-image: url("/backgrounds/SPLPoker2.png");
+    backdrop-filter: blur(4px);
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -69,7 +69,7 @@ body::before {
 }
 
 .lobby-form {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.37);
     backdrop-filter: blur(5px);
     border-radius: 20px;
     padding: 40px;
@@ -97,7 +97,7 @@ body::before {
     width: 100%;
     padding: 12px 20px;
     font-size: 1em;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.567);
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.381);
     color: #fff;
@@ -106,7 +106,7 @@ body::before {
 
 .form-group input[type="text"]:focus {
     outline: none;
-    border-color: #4CAF50;
+    border-color: #00ffcc;
     background: rgba(255, 255, 255, 0.3);
 }
 

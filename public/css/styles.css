@@ -60,7 +60,7 @@ body::before {
 
 .game-title {
     display: flex;
-    height: 320px;
+    height: 310px;
     margin-left: -35px;
 }
     

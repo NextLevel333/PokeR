@@ -60,7 +60,8 @@ body::before {
 
 .game-title {
     display: flex;
-    height: 295px;
+    height: 320px;
+    margin-left: -35px;
 }
     
 .lobby-form {

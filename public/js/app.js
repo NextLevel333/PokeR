@@ -423,8 +423,8 @@ function updatePlayers(state) {
             seat.classList.add('dealer');
         }
 
-        // Highlight current player
-        if (index === state.currentPlayerIndex && state.gameInProgress) {
+        // Highlight current player by matching player ID instead of index
+        if (player.id === state.currentPlayerId && state.gameInProgress) {
             seat.classList.add('active');
         }
 
@@ -507,7 +507,7 @@ function updateActionControls(state) {
     const currentPlayer = state.players.find(p => p.id === gameState.playerId);
     if (!currentPlayer) return;
 
-    const isMyTurn = state.players[state.currentPlayerIndex]?.id === gameState.playerId;
+    const isMyTurn = state.currentPlayerId === gameState.playerId;
     const canAct = isMyTurn && !currentPlayer.folded && !currentPlayer.allIn && state.gameInProgress;
 
     // Enable/disable buttons

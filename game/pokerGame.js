@@ -26,6 +26,7 @@ class Player {
     this.folded = false;
     this.allIn = false;
     this.isActive = true;
+    this.hasActed = false;
   }
 
   reset() {
@@ -33,6 +34,7 @@ class Player {
     this.hand = [];
     this.folded = false;
     this.allIn = false;
+    this.hasActed = false;
   }
 }
 
@@ -189,6 +191,12 @@ class PokerGame {
         this.pot += raiseAmount;
         this.currentBet = player.bet;
         if (player.chips === 0) player.allIn = true;
+        // When a player raises, reset hasActed for all other active players
+        this.players.forEach(p => {
+          if (p.id !== player.id && !p.folded && !p.allIn) {
+            p.hasActed = false;
+          }
+        });
         break;
 
       case PLAYER_ACTIONS.ALL_IN:
@@ -199,12 +207,21 @@ class PokerGame {
         player.allIn = true;
         if (player.bet > this.currentBet) {
           this.currentBet = player.bet;
+          // When a player raises via all-in, reset hasActed for all other active players
+          this.players.forEach(p => {
+            if (p.id !== player.id && !p.folded && !p.allIn) {
+              p.hasActed = false;
+            }
+          });
         }
         break;
 
       default:
         return { success: false, message: 'Invalid action' };
     }
+
+    // Mark this player as having acted
+    player.hasActed = true;
 
     // Move to next player
     this.moveToNextPlayer();
@@ -242,13 +259,18 @@ class PokerGame {
     if (activePlayers.length === 0) return true;
     if (activePlayers.length === 1) return true;
 
-    // All active players have bet the same amount
-    return activePlayers.every(p => p.bet === this.currentBet);
+    // All active players must have:
+    // 1. Bet the same amount as currentBet
+    // 2. Had their turn to act (hasActed = true)
+    return activePlayers.every(p => p.bet === this.currentBet && p.hasActed);
   }
 
   advanceBettingRound() {
-    // Reset bets for next round
-    this.players.forEach(player => player.bet = 0);
+    // Reset bets and hasActed for next round
+    this.players.forEach(player => {
+      player.bet = 0;
+      player.hasActed = false;
+    });
     this.currentBet = 0;
 
     switch (this.bettingRound) {
@@ -474,6 +496,7 @@ class PokerGame {
       bettingRound: this.bettingRound,
       dealerIndex: this.dealerIndex,
       currentPlayerIndex: this.currentPlayerIndex,
+      currentPlayerId: this.players[this.currentPlayerIndex]?.id || null,
       gameInProgress: this.gameInProgress,
       smallBlind: this.smallBlind,
       bigBlind: this.bigBlind

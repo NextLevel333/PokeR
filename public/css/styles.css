@@ -830,3 +830,198 @@ body.modal-open {
         height: 80px;
     }
 }
+
+/* Ready Button Styles */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-ready {
+    background: #666;
+    color: white;
+    padding: 10px 25px;
+    font-size: 1em;
+}
+
+.btn-ready:hover:not(:disabled) {
+    background: #555;
+}
+
+.btn-ready.ready-active {
+    background: #4CAF50;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+    animation: glow 1.5s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(76, 175, 80, 0.9);
+    }
+}
+
+.btn-ready:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.ready-status {
+    color: #4CAF50;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+/* Mobile/Portrait Layout */
+@media (max-width: 650px), (orientation: portrait) {
+    body.mobile-portrait .poker-table {
+        padding: 10px;
+        min-height: 40vh;
+    }
+    
+    body.mobile-portrait .table-felt {
+        width: 100%;
+        max-width: 350px;
+        height: 400px;
+        border-radius: 175px / 200px;
+        border-width: 10px;
+    }
+    
+    body.mobile-portrait .community-cards {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+        padding: 10px;
+    }
+    
+    body.mobile-portrait .community-cards .card-slot {
+        width: 50px;
+        height: 70px;
+    }
+    
+    body.mobile-portrait .card {
+        font-size: 1.5em;
+        width: 50px;
+        height: 70px;
+    }
+    
+    body.mobile-portrait .pot-display {
+        font-size: 0.9em;
+        padding: 5px 10px;
+    }
+    
+    /* Stack player seats vertically in 2 columns */
+    body.mobile-portrait .player-seats {
+        position: static;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 10px;
+        padding: 0 10px;
+    }
+    
+    body.mobile-portrait .player-seat {
+        position: static !important;
+        transform: none !important;
+        width: 100%;
+        min-height: 80px;
+    }
+    
+    body.mobile-portrait .player-info {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    body.mobile-portrait .player-avatar {
+        font-size: 2em;
+        width: 40px;
+        height: 40px;
+    }
+    
+    body.mobile-portrait .player-name {
+        font-size: 0.9em;
+    }
+    
+    body.mobile-portrait .player-chips {
+        font-size: 0.85em;
+    }
+    
+    /* Stack action controls vertically */
+    body.mobile-portrait .action-controls {
+        flex-direction: column;
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    body.mobile-portrait .player-hand {
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    body.mobile-portrait .player-hand .card-slot {
+        width: 70px;
+        height: 100px;
+    }
+    
+    body.mobile-portrait .action-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    body.mobile-portrait .action-buttons button {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.2em;
+    }
+    
+    body.mobile-portrait .raise-controls {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    body.mobile-portrait .raise-controls input {
+        width: 100%;
+    }
+    
+    /* Winner display on mobile */
+    body.mobile-portrait .winner-display {
+        padding: 15px;
+    }
+    
+    body.mobile-portrait .winner-content {
+        max-width: 100%;
+        padding: 20px;
+    }
+    
+    body.mobile-portrait .winner-content h2 {
+        font-size: 1.5em;
+    }
+    
+    body.mobile-portrait .winners-list {
+        font-size: 0.9em;
+    }
+    
+    /* Game header on mobile */
+    body.mobile-portrait .game-header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    body.mobile-portrait .header-controls {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+    
+    body.mobile-portrait .header-controls button {
+        width: 100%;
+    }
+}

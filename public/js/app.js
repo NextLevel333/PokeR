@@ -16,6 +16,8 @@ const gameScreen = document.getElementById('game');
 const playerNameInput = document.getElementById('playerName');
 const joinTableBtn = document.getElementById('joinTableBtn');
 const leaveTableBtn = document.getElementById('leaveTableBtn');
+const readyBtn = document.getElementById('readyBtn');
+const readyStatus = document.getElementById('readyStatus');
 const foldBtn = document.getElementById('foldBtn');
 const checkCallBtn = document.getElementById('checkCallBtn');
 const raiseBtn = document.getElementById('raiseBtn');
@@ -29,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupGameControls();
     setupAvatarModal();
     updateAvatarPreview();
+    detectOrientation();
+    window.addEventListener('resize', detectOrientation);
+    window.addEventListener('orientationchange', detectOrientation);
 });
 
 // Lobby Setup
@@ -233,6 +238,19 @@ function setupGameControls() {
         showLobby();
     });
 
+    // Ready button handler
+    if (readyBtn) {
+        readyBtn.addEventListener('click', () => {
+            socket.emit('playerReady', {
+                tableId: gameState.tableId
+            });
+            // Disable button after clicking
+            readyBtn.disabled = true;
+            readyBtn.textContent = 'Ready ✓';
+            readyBtn.classList.add('ready-active');
+        });
+    }
+
     foldBtn.addEventListener('click', () => {
         socket.emit('playerAction', {
             tableId: gameState.tableId,
@@ -305,7 +323,21 @@ socket.on('handComplete', (data) => {
     showWinners(data.winners);
     setTimeout(() => {
         hideWinners();
+        // After hand complete, show ready button again
+        if (readyBtn) {
+            readyBtn.style.display = 'inline-block';
+            readyBtn.disabled = false;
+            readyBtn.textContent = 'Ready Up';
+            readyBtn.classList.remove('ready-active');
+        }
+        if (readyStatus) {
+            readyStatus.style.display = 'inline-block';
+        }
     }, 4500);
+});
+
+socket.on('readinessUpdate', (data) => {
+    updateReadinessUI(data.readiness);
 });
 
 socket.on('playerLeft', (data) => {
@@ -510,6 +542,20 @@ function updateActionControls(state) {
     const isMyTurn = state.currentPlayerId === gameState.playerId;
     const canAct = isMyTurn && !currentPlayer.folded && !currentPlayer.allIn && state.gameInProgress;
 
+    // Hide action controls if game not in progress, show ready button instead
+    const actionControls = document.querySelector('.action-controls');
+    if (actionControls) {
+        if (state.gameInProgress) {
+            actionControls.style.display = 'flex';
+            if (readyBtn) readyBtn.style.display = 'none';
+            if (readyStatus) readyStatus.style.display = 'none';
+        } else {
+            // Game not started - show ready controls
+            if (readyBtn) readyBtn.style.display = 'inline-block';
+            if (readyStatus) readyStatus.style.display = 'inline-block';
+        }
+    }
+
     // Enable/disable buttons
     foldBtn.disabled = !canAct;
     checkCallBtn.disabled = !canAct;
@@ -611,4 +657,45 @@ function showWinners(winners) {
 
 function hideWinners() {
     winnerDisplay.style.display = 'none';
+}
+
+// Update readiness UI
+function updateReadinessUI(readiness) {
+    if (!readiness || !readyStatus) return;
+    
+    const readyCount = readiness.filter(r => r.ready).length;
+    const totalCount = readiness.length;
+    
+    readyStatus.textContent = `Ready ${readyCount}/${totalCount}`;
+    
+    // Update ready button state for current player
+    const currentPlayerReadiness = readiness.find(r => r.id === gameState.playerId);
+    if (currentPlayerReadiness && currentPlayerReadiness.ready && readyBtn) {
+        readyBtn.disabled = true;
+        readyBtn.textContent = 'Ready ✓';
+        readyBtn.classList.add('ready-active');
+    }
+    
+    // Hide ready controls when game is in progress
+    if (gameState.currentGameState && gameState.currentGameState.gameInProgress) {
+        if (readyBtn) readyBtn.style.display = 'none';
+        if (readyStatus) readyStatus.style.display = 'none';
+    }
+}
+
+// Mobile/Portrait orientation detection
+let orientationDebounceTimer = null;
+
+function detectOrientation() {
+    // Debounce to avoid spam
+    clearTimeout(orientationDebounceTimer);
+    orientationDebounceTimer = setTimeout(() => {
+        const isMobilePortrait = window.innerWidth < 650 || window.innerHeight > window.innerWidth;
+        
+        if (isMobilePortrait) {
+            document.body.classList.add('mobile-portrait');
+        } else {
+            document.body.classList.remove('mobile-portrait');
+        }
+    }, 200);
 }

@@ -14,6 +14,20 @@ A real-time multiplayer Texas Hold'em poker game built with Node.js, Express, an
   - Full Pot + Side Pot management and winner determination
   - Support for fold, check, call, raise, and all-in actions
 
+### Real-time Features
+- ✅ **Live Table Updates**: Instant updates to all connected players without refresh
+  - Player join/leave events appear in real-time
+  - Ready state changes broadcast immediately
+  - Hand start/end notifications
+- ✅ **Persistent Ready State**: Stay ready across consecutive hands
+  - Click "Ready Up" once and remain ready for multiple hands
+  - Toggle ready state on/off at any time
+  - Automatically unready when leaving table
+- ✅ **Auto-start Hands**: Next hand starts automatically when all seated players are ready
+  - No need to click ready after each hand
+  - Seamless gameplay experience
+  - 2-player fold scenarios handled correctly
+
 ### UI Features
 - ✅ **Clean Lobby Interface**:
   - Player name input
@@ -104,7 +118,35 @@ The server will start on port 3000. Open your browser and navigate to `http://lo
    - Best 5-card hand from your 2 hole cards + 5 community cards wins
    - Winners are displayed with their winning hand
    - Pot is distributed to winner(s)
-   - New hand starts automatically after 5 seconds
+   - Next hand starts automatically if all players remain ready
+
+6. **Ready System**:
+   - Click "Ready Up" to indicate you're ready to play
+   - Your ready state persists across hands - no need to ready up after each hand
+   - Click "Ready ✓" again to toggle off if you need a break
+   - New hand starts automatically when all seated players are ready
+
+## Real-time Events
+
+The game uses Socket.IO for real-time communication. The following events keep all players synchronized:
+
+### Server Events (Broadcast to all players at table)
+- `table:player_joined` - Player joins the table
+- `table:player_left` - Player leaves the table
+- `table:ready_toggled` - Player toggles ready state
+- `table:hand_started` - New hand begins (includes timestamp, dealerIndex)
+- `table:hand_ended` - Hand completes (includes timestamp)
+- `readinessUpdate` - Ready state changes (includes all players' ready status)
+- `gameState` - Game state update (cards dealt, actions taken, etc.)
+- `handComplete` - Hand results with winner information
+
+### Client Events (Sent to server)
+- `joinTable` - Request to join a table
+- `leaveTable` - Request to leave current table
+- `playerReady` - Toggle ready state
+- `playerAction` - Perform game action (fold, check, call, raise)
+
+All events are logged to the browser console for debugging (check Developer Tools > Console).
 
 ## Technology Stack
 

@@ -70,6 +70,10 @@ class PokerGame {
   removePlayer(id) {
     const index = this.players.findIndex(p => p.id === id);
     if (index !== -1) {
+      const player = this.players[index];
+      // Reset ready state when player leaves
+      player.ready = false;
+      
       this.players.splice(index, 1);
       
       // Adjust indices if needed
@@ -89,11 +93,21 @@ class PokerGame {
   }
 
   // Player ready system methods
-  setPlayerReady(playerId) {
+  setPlayerReady(playerId, ready = true) {
     const player = this.players.find(p => p.id === playerId);
     if (player) {
-      player.ready = true;
+      player.ready = ready;
       return true;
+    }
+    return false;
+  }
+
+  // Toggle player ready state
+  togglePlayerReady(playerId) {
+    const player = this.players.find(p => p.id === playerId);
+    if (player) {
+      player.ready = !player.ready;
+      return player.ready;
     }
     return false;
   }

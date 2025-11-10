@@ -244,10 +244,7 @@ function setupGameControls() {
             socket.emit('playerReady', {
                 tableId: gameState.tableId
             });
-            // Disable button after clicking
-            readyBtn.disabled = true;
-            readyBtn.textContent = 'Ready ✓';
-            readyBtn.classList.add('ready-active');
+            // Don't disable - let server toggle state and update UI
         });
     }
 
@@ -323,16 +320,8 @@ socket.on('handComplete', (data) => {
     showWinners(data.winners);
     setTimeout(() => {
         hideWinners();
-        // After hand complete, show ready button again
-        if (readyBtn) {
-            readyBtn.style.display = 'inline-block';
-            readyBtn.disabled = false;
-            readyBtn.textContent = 'Ready Up';
-            readyBtn.classList.remove('ready-active');
-        }
-        if (readyStatus) {
-            readyStatus.style.display = 'inline-block';
-        }
+        // Keep ready state persistent - don't reset UI
+        // Players remain ready across hands
     }, 4500);
 });
 
@@ -670,16 +659,25 @@ function updateReadinessUI(readiness) {
     
     // Update ready button state for current player
     const currentPlayerReadiness = readiness.find(r => r.id === gameState.playerId);
-    if (currentPlayerReadiness && currentPlayerReadiness.ready && readyBtn) {
-        readyBtn.disabled = true;
-        readyBtn.textContent = 'Ready ✓';
-        readyBtn.classList.add('ready-active');
+    if (currentPlayerReadiness && readyBtn) {
+        if (currentPlayerReadiness.ready) {
+            readyBtn.classList.add('ready-active');
+            readyBtn.textContent = 'Ready ✓';
+        } else {
+            readyBtn.classList.remove('ready-active');
+            readyBtn.textContent = 'Ready Up';
+        }
+        // Always enable the button so players can toggle
+        readyBtn.disabled = false;
     }
     
-    // Hide ready controls when game is in progress
+    // Show/hide ready controls based on game state
     if (gameState.currentGameState && gameState.currentGameState.gameInProgress) {
         if (readyBtn) readyBtn.style.display = 'none';
         if (readyStatus) readyStatus.style.display = 'none';
+    } else {
+        if (readyBtn) readyBtn.style.display = 'inline-block';
+        if (readyStatus) readyStatus.style.display = 'inline-block';
     }
 }
 
@@ -699,3 +697,24 @@ function detectOrientation() {
         }
     }, 200);
 }
+
+// Listen for new real-time events
+socket.on('table:player_joined', (data) => {
+    console.log('Real-time: Player joined', data.player.name);
+});
+
+socket.on('table:player_left', (data) => {
+    console.log('Real-time: Player left', data.playerId);
+});
+
+socket.on('table:ready_toggled', (data) => {
+    console.log('Real-time: Player ready toggled', data.playerId, data.ready);
+});
+
+socket.on('table:hand_started', (data) => {
+    console.log('Real-time: Hand started', data);
+});
+
+socket.on('table:hand_ended', (data) => {
+    console.log('Real-time: Hand ended', data);
+});

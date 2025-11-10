@@ -63,7 +63,18 @@ io.on('connection', (socket) => {
         gameState: table.getGameState()
       });
 
-      // Broadcast to all players in the table
+      // Emit player_joined event to all players in the table
+      io.to(tableId).emit('table:player_joined', {
+        player: {
+          id: socket.id,
+          name: playerName,
+          avatar,
+          chips: player.chips
+        },
+        timestamp: Date.now()
+      });
+
+      // Broadcast to all players in the table (legacy event)
       io.to(tableId).emit('playerJoined', {
         player: {
           id: socket.id,
@@ -93,8 +104,15 @@ io.on('connection', (socket) => {
       return;
     }
 
-    // Mark player as ready
-    table.setPlayerReady(socket.id);
+    // Toggle player ready state
+    const newReadyState = table.togglePlayerReady(socket.id);
+
+    // Emit ready_toggled event
+    io.to(tableId).emit('table:ready_toggled', {
+      playerId: socket.id,
+      ready: newReadyState,
+      timestamp: Date.now()
+    });
 
     // Broadcast readiness update to all players
     io.to(tableId).emit('readinessUpdate', {
@@ -102,9 +120,16 @@ io.on('connection', (socket) => {
     });
 
     // Check if all players are ready and can start
-    if (table.areAllPlayersReady() && !table.gameInProgress) {
+    if (table.areAllPlayersReady() && !table.gameInProgress && table.players.length >= 2) {
       setTimeout(() => {
         table.startNewHand();
+        
+        // Emit hand_started event
+        io.to(tableId).emit('table:hand_started', {
+          timestamp: Date.now(),
+          dealerIndex: table.dealerIndex
+        });
+        
         io.to(tableId).emit('gameState', table.getGameState());
       }, 1000);
     }
@@ -125,6 +150,11 @@ io.on('connection', (socket) => {
 
       // Check if hand is complete
       if (result.handComplete) {
+        // Emit hand_ended event
+        io.to(tableId).emit('table:hand_ended', {
+          timestamp: Date.now()
+        });
+
         setTimeout(() => {
           // Handle single player win (everyone else folded)
           let winners;
@@ -136,16 +166,30 @@ io.on('connection', (socket) => {
           
           io.to(tableId).emit('handComplete', { winners });
 
+          // Auto-start next hand after delay if all seated players are ready
           setTimeout(() => {
-            // Reset ready states for next hand
-            table.resetReadyStates();
+            // Don't reset ready states - keep them persistent!
+            // Players remain ready across hands until they manually unready or leave
             
             // Broadcast readiness update
             io.to(tableId).emit('readinessUpdate', {
               readiness: table.getReadinessState()
             });
             
-            // Wait for players to ready up for next hand
+            // Auto-start next hand if enough players are ready
+            if (table.areAllPlayersReady() && table.players.length >= 2) {
+              setTimeout(() => {
+                table.startNewHand();
+                
+                // Emit hand_started event
+                io.to(tableId).emit('table:hand_started', {
+                  timestamp: Date.now(),
+                  dealerIndex: table.dealerIndex
+                });
+                
+                io.to(tableId).emit('gameState', table.getGameState());
+              }, 1000);
+            }
           }, 5000);
         }, 1000);
       }
@@ -160,6 +204,13 @@ io.on('connection', (socket) => {
       const table = tables[socket.tableId];
       table.removePlayer(socket.id);
       
+      // Emit player_left event
+      io.to(socket.tableId).emit('table:player_left', {
+        playerId: socket.id,
+        timestamp: Date.now()
+      });
+      
+      // Broadcast updated game state (legacy event)
       io.to(socket.tableId).emit('playerLeft', {
         playerId: socket.id,
         gameState: table.getGameState()
@@ -179,6 +230,13 @@ io.on('connection', (socket) => {
       if (table) {
         table.removePlayer(socket.id);
         
+        // Emit player_left event
+        io.to(socket.tableId).emit('table:player_left', {
+          playerId: socket.id,
+          timestamp: Date.now()
+        });
+        
+        // Broadcast updated game state (legacy event)
         io.to(socket.tableId).emit('playerLeft', {
           playerId: socket.id,
           gameState: table.getGameState()

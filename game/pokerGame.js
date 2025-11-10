@@ -27,6 +27,7 @@ class Player {
     this.allIn = false;
     this.isActive = true;
     this.hasActed = false;
+    this.ready = false; // Player readiness for starting hands
   }
 
   reset() {
@@ -85,6 +86,35 @@ class PokerGame {
 
   getPlayerCount() {
     return this.players.length;
+  }
+
+  // Player ready system methods
+  setPlayerReady(playerId) {
+    const player = this.players.find(p => p.id === playerId);
+    if (player) {
+      player.ready = true;
+      return true;
+    }
+    return false;
+  }
+
+  resetReadyStates() {
+    this.players.forEach(player => {
+      player.ready = false;
+    });
+  }
+
+  areAllPlayersReady() {
+    if (this.players.length < 2) return false;
+    return this.players.every(p => p.ready);
+  }
+
+  getReadinessState() {
+    return this.players.map(p => ({
+      id: p.id,
+      name: p.name,
+      ready: p.ready
+    }));
   }
 
   startNewHand() {
@@ -149,6 +179,31 @@ class PokerGame {
         player.hand.push(this.deck.deal());
       });
     }
+  }
+
+  // Check if only one player remains (all others folded)
+  // Returns true if hand should end immediately with single winner
+  checkForSinglePlayerWin() {
+    const activePlayers = this.players.filter(p => !p.folded);
+    
+    if (activePlayers.length === 1) {
+      // Single player wins - create side pots and award to winner
+      this.createSidePots();
+      const winner = activePlayers[0];
+      const totalPot = this.pots.reduce((sum, pot) => sum + pot.amount, 0) || this.pot;
+      winner.chips += totalPot;
+      
+      return {
+        singlePlayerWin: true,
+        winner: {
+          player: winner,
+          hand: null,
+          winAmount: totalPot
+        }
+      };
+    }
+    
+    return { singlePlayerWin: false };
   }
 
   handlePlayerAction(playerId, action, amount = 0) {
@@ -222,6 +277,12 @@ class PokerGame {
 
     // Mark this player as having acted
     player.hasActed = true;
+
+    // Check for single player win (everyone else folded)
+    const singleWinCheck = this.checkForSinglePlayerWin();
+    if (singleWinCheck.singlePlayerWin) {
+      return { success: true, handComplete: true, singlePlayerWin: true, winner: singleWinCheck.winner };
+    }
 
     // Move to next player
     this.moveToNextPlayer();

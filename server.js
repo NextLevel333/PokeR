@@ -73,13 +73,40 @@ io.on('connection', (socket) => {
         }
       });
 
-      // Start game if enough players
-      if (table.getPlayerCount() >= 2 && !table.gameInProgress) {
-        setTimeout(() => {
-          table.startNewHand();
-          io.to(tableId).emit('gameState', table.getGameState());
-        }, 2000);
-      }
+      // Broadcast readiness update to all players in table
+      io.to(tableId).emit('readinessUpdate', {
+        readiness: table.getReadinessState()
+      });
+
+      // Don't auto-start - wait for all players to be ready
+      // Game will start when all players click ready
+    }
+  });
+
+  // Player ready event
+  socket.on('playerReady', (data) => {
+    const { tableId } = data;
+    const table = tables[tableId];
+
+    if (!table) {
+      socket.emit('error', { message: 'Table not found' });
+      return;
+    }
+
+    // Mark player as ready
+    table.setPlayerReady(socket.id);
+
+    // Broadcast readiness update to all players
+    io.to(tableId).emit('readinessUpdate', {
+      readiness: table.getReadinessState()
+    });
+
+    // Check if all players are ready and can start
+    if (table.areAllPlayersReady() && !table.gameInProgress) {
+      setTimeout(() => {
+        table.startNewHand();
+        io.to(tableId).emit('gameState', table.getGameState());
+      }, 1000);
     }
   });
 
@@ -99,12 +126,26 @@ io.on('connection', (socket) => {
       // Check if hand is complete
       if (result.handComplete) {
         setTimeout(() => {
-          const winners = table.determineWinners();
+          // Handle single player win (everyone else folded)
+          let winners;
+          if (result.singlePlayerWin) {
+            winners = [result.winner];
+          } else {
+            winners = table.determineWinners();
+          }
+          
           io.to(tableId).emit('handComplete', { winners });
 
           setTimeout(() => {
-            table.startNewHand();
-            io.to(tableId).emit('gameState', table.getGameState());
+            // Reset ready states for next hand
+            table.resetReadyStates();
+            
+            // Broadcast readiness update
+            io.to(tableId).emit('readinessUpdate', {
+              readiness: table.getReadinessState()
+            });
+            
+            // Wait for players to ready up for next hand
           }, 5000);
         }, 1000);
       }

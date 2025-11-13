@@ -61,14 +61,16 @@ body::before {
     display: flex;
     height: 310px;
     margin-left: -35px;
+    margin-top: -20px;
+
 }
     
 .lobby-form {
-    background: rgba(0, 0, 0, 0.37);
+    background: rgb(2 21 6 / 72%);
     backdrop-filter: blur(5px);
     border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0);
+    padding: 50px;
+    box-shadow: 0 8px 32px rgb(23 255 0 / 45%);
 }
 
 .lobby-form h2 {
@@ -102,7 +104,7 @@ body::before {
 .form-group input[type="text"]:focus {
     outline: none;
     border-color: #00ffcc;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(230, 255, 234, 0.54);
 }
 
 .form-group input[type="text"]::placeholder {
@@ -877,7 +879,7 @@ body.modal-open {
 /* Mobile/Portrait Layout */
 @media (max-width: 650px), (orientation: portrait) {
     body.mobile-portrait .poker-table {
-        padding: 40px 25px 120px 25px;
+        padding: 40px 25px 150px 25px;
         min-height: 80vh;
     }
     

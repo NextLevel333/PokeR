@@ -878,14 +878,14 @@ body.modal-open {
 /* Mobile/Portrait Layout */
 @media (max-width: 650px), (orientation: portrait) {
     body.mobile-portrait .poker-table {
-        padding: 30px 20px 300px 20px;
-        min-height: 100vh;
+        padding: 40px 25px 150px 25px;
+        min-height: 67vh;
     }
     
     body.mobile-portrait .table-felt {
         width: 100%;
         max-width: 520px;
-        height: 375px;
+        height: 300px;
         border-radius: 175px / 100px;
         border-width: 10px;
     }
@@ -893,7 +893,7 @@ body.modal-open {
     body.mobile-portrait .community-cards {
         flex-direction: row;
         justify-content: center;
-        gap: 5px;
+        gap: 9px;
         padding: 0px 0px 0px 0px;
     }
     
@@ -911,24 +911,12 @@ body.modal-open {
     body.mobile-portrait .pot-display {
         font-size: 0.9em;
         padding: 9px 20px;
-        margin-top: -180px;
+        margin-top: 20px;
     }
-    
-    /* Stack player seats vertically in 2 columns */
-    body.mobile-portrait .player-seats {
-        position: static;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap:10px;
-        margin-top: 1px;
-        padding: 0px 0px 0px 0px;
-    }
-    
+
     body.mobile-portrait .player-seat {
-        position: static !important;
-        transform: none !important;
-        width: 70%;
-        min-height: 70px;
+        width: 10%;
+        min-height: 10px;
     }
     
     body.mobile-portrait .player-info {
@@ -949,7 +937,7 @@ body.modal-open {
     }
     
     body.mobile-portrait .player-chips {
-        font-size: 1em;
+        font-size: 0.85em;
     }
     
     /* Stack action controls vertically */
@@ -982,7 +970,7 @@ body.modal-open {
     }
     
     body.mobile-portrait .raise-controls {
-        flex-direction: column;
+        flex-direction: column-reverse;
         width: 820%;
         gap: 10px;
     }

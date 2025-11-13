@@ -662,10 +662,10 @@ function updateReadinessUI(readiness) {
     if (currentPlayerReadiness && readyBtn) {
         if (currentPlayerReadiness.ready) {
             readyBtn.classList.add('ready-active');
-            readyBtn.textContent = 'Ready ✓';
+            readyBtn.textContent = 'Wait';
         } else {
             readyBtn.classList.remove('ready-active');
-            readyBtn.textContent = 'Ready Up';
+            readyBtn.textContent = 'Ready?';
         }
         // Always enable the button so players can toggle
         readyBtn.disabled = false;

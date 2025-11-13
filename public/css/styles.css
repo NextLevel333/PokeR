@@ -10,13 +10,12 @@
     z-index: 1;
 }
 
-body {
-    font-family: 'Arial', sans-serif;
-    /* Use the SPLPoker1.jpg background. 
-       If the image is served at /backgrounds/SPLPoker1.jpg this absolute path will work.
-       Otherwise adjust the URL relative to this CSS file (public/css/styles.css). */
+body {  
+    
+    font-family: "Rostenfly";
+    src: url("/fonts/Rostenfly.woff") format("woff");
     background-image: url("/backgrounds/SPLPoker2.png");
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(3px);
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -50,7 +49,7 @@ body::before {
 
 /* Lobby Styles */
 .lobby-container {
-    max-width: 400px;
+    max-width: 360px;
     margin: 0 auto;
     padding: 40px 20px;
     text-align: center;
@@ -878,7 +877,7 @@ body.modal-open {
 /* Mobile/Portrait Layout */
 @media (max-width: 650px), (orientation: portrait) {
     body.mobile-portrait .poker-table {
-        padding: 40px 25px 150px 25px;
+        padding: 40px 25px 120px 25px;
         min-height: 80vh;
     }
     
@@ -1020,7 +1019,7 @@ body.modal-open {
     }
     
     body.mobile-portrait .header-controls {
-        width: 100%;
+        width: 60%;
         gap: 30px;
     }
     

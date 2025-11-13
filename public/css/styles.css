@@ -879,7 +879,7 @@ body.modal-open {
 @media (max-width: 650px), (orientation: portrait) {
     body.mobile-portrait .poker-table {
         padding: 40px 25px 150px 25px;
-        min-height: 67vh;
+        min-height: 80vh;
     }
     
     body.mobile-portrait .table-felt {
@@ -898,8 +898,8 @@ body.modal-open {
     }
     
     body.mobile-portrait .community-cards .card-slot {
-        width: 55px;
-        height: 85px;
+        width: 50px;
+        height: 80px;
     }
     
     body.mobile-portrait .card {
@@ -909,13 +909,13 @@ body.modal-open {
     }
     
     body.mobile-portrait .pot-display {
-        font-size: 0.9em;
-        padding: 9px 20px;
+        font-size: 0.87em;
+        padding: 9px 15px;
         margin-top: 20px;
     }
 
     body.mobile-portrait .player-seat {
-        width: 10%;
+        width: 18%;
         min-height: 10px;
     }
     
@@ -950,6 +950,7 @@ body.modal-open {
     body.mobile-portrait .player-hand {
         justify-content: center;
         gap: 10px;
+        padding: 10px;
     }
     
     body.mobile-portrait .player-hand .card-slot {

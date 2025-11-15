@@ -53,30 +53,32 @@ body::before {
     margin: auto;
     text-align: center;
     animation: fadeIn 1s ease-in;
+    justify-content:center;
 
 }
 
 .game-title {
     display: flex;
     height: 310px;
-    margin-left: -10%;
+    justify-content: center;
 }
     
 .lobby-form {
     background: rgb(2 21 6 / 72%);
     backdrop-filter: blur(5px);
-    border-radius: 20px;
-    padding: 50px;
-    box-shadow: 0px 0px 35px rgb(23 255 0 / 45%);
+    border-radius: 150px;
+    padding: 30px;
+    box-shadow: 0px 0px 30px rgb(23 255 0 / 45%);
+    border: 4px solid white;
 }
 
 .lobby-form h2 {
-    margin-bottom: 30px;
     font-size: 2em;
+    padding: 20px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     text-align: left;
 }
 
@@ -105,7 +107,7 @@ body::before {
 }
 
 .form-group input[type="text"]::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgb(255 255 255 / 61%);
 }
 
 /* Avatar Selection */
@@ -151,7 +153,7 @@ body::before {
 .table-card {
     background: rgba(255, 255, 255, 0.15);
     border: 3px solid rgba(255, 255, 255, 0.3);
-    border-radius: 15px;
+    border-radius: 150px;
     padding: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -164,13 +166,12 @@ body::before {
 }
 
 .table-card.selected {
-    border-color: #4CAF50;
-    background: rgba(76, 175, 80, 0.2);
+    border-color: #ffffff;
+    background: rgb(245 255 245 / 30%);
 }
 
 .table-card h3 {
-    margin-bottom: 15px;
-    font-size: 1.5em;
+    font-size: 1.3em;
 }
 
 .table-info {
@@ -180,7 +181,7 @@ body::before {
 }
 
 .player-count {
-    font-size: 1.1em;
+    font-size: 1em;
 }
 
 .table-status {
@@ -301,12 +302,12 @@ body::before {
 /* Pot Display */
 .pot-display {
     position: absolute;
-    top: 72%;
+    top: 76%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: rgba(0, 0, 0, 0.6);
     padding: 10px 20px;
-    border-radius: 15px;
+    border-radius: 150px;
     text-align: center;
 }
 
@@ -331,10 +332,9 @@ body::before {
 
 .player-seat {
     position: absolute;
-    width: 80px;
-    padding: 10px;
+    padding: 0px 0px .1px 10px;
     background: rgba(0, 0, 0, 0.6);
-    border-radius: 10px;
+    border-radius: 50px;
     text-align: center;
     transition: all 0.3s ease;
 }
@@ -367,10 +367,10 @@ body::before {
 
 /* Position seats around the table */
 .seat-0 { top: -5%; left: 50%; transform: translateX(-50%); }
-.seat-1 { top: -1%; left: 70%; }
-.seat-2 { top: 30%; left: 90%; }
-.seat-3 { top: 68%; left: 90%; }
-.seat-4 { top: 90%; left: 70%; }
+.seat-1 { top: -1%; left: 66%; }
+.seat-2 { top: 30%; left: 86%; }
+.seat-3 { top: 68%; left: 86%; }
+.seat-4 { top: 90%; left: 68%; }
 .seat-5 { top: 94%; left: 50%; transform: translateX(-50%); }
 .seat-6 { top: 90%; left: 20%; }
 .seat-7 { top: 68%; left: 0%; }
@@ -378,18 +378,18 @@ body::before {
 .seat-9 { top: -1%; left: 20%; }
 
 .player-info {
-    margin-bottom: 8px;
+    margin-bottom: 0px;
 }
 
 .player-avatar {
     font-size: 2em;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 .player-name {
     font-size: 0.9em;
     font-weight: bold;
-    margin-bottom: 3px;
+    margin-bottom: 0px;
 }
 
 .player-chips {
@@ -467,11 +467,11 @@ body::before {
 /* Action Controls */
 .action-controls {
     position: fixed;
-    bottom: 0;
+    bottom: -70px;
     left: 0;
     right: 0;
     background: rgba(0, 0, 0, 0.8);
-    padding: 20px;
+    padding: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -484,7 +484,7 @@ body::before {
 
 .player-hand .card-slot {
     width: 70px;
-    height: 100px;
+    height: 90px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.1);

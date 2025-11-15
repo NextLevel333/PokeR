@@ -59,9 +59,7 @@ body::before {
 .game-title {
     display: flex;
     height: 310px;
-    margin-left: -8px;
-    margin-top: 0px;
-
+    margin-left: -10%;
 }
     
 .lobby-form {
@@ -250,7 +248,7 @@ body::before {
 
 /* Game Screen */
 .game-header {
-    padding: 5px;
+    padding: 5px 15px 5px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -908,14 +906,16 @@ body.modal-open {
     }
     
     body.mobile-portrait .pot-display {
-        font-size: 0.87em;
-        padding: 9px 15px;
+        font-size: 0.83em;
+        padding: 4px 10px;
         margin-top: 20px;
+        border-radius: 50px;
     }
 
     body.mobile-portrait .player-seat {
         width: 18%;
-        min-height: 10px;
+        min-height: 1%;
+        border-radius: 50px;
     }
     
     /* Mobile seat layout */
@@ -1014,13 +1014,13 @@ body.modal-open {
     body.mobile-portrait .game-header {
         flex-direction: row;
         gap: 30px;
-        padding: 5px 0px 5px 10px;
+        padding: 3px 10px 3px 10px;
         font-size: 0.6em;
     }
     
     body.mobile-portrait .header-controls {
         width: 60%;
-        gap: 30px;
+        gap: 20px;
     }
     
     body.mobile-portrait .header-controls button {
